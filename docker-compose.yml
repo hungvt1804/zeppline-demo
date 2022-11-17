@@ -1,0 +1,38 @@
+version: '3.7'
+networks:
+  visuallize:
+    driver: bridge
+volumes:
+  visuallize:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: /home/visuallize
+services:
+  spark:
+    container_name: sparkmaster
+    build:
+      dockerfile: Dockerfile
+      context: .
+    hostname: sparkmaster
+    restart: always
+    networks:
+      - visuallize
+    ports:
+      - 8588:8080
+      - 7077:7077
+      - 8888:8888
+      - 8081:8081
+    volumes:
+      - visuallize:/home/visuallize
+  zeppelin:
+    container_name: zeppelin
+    image: apache/zeppelin:0.10.0
+    restart: always
+    networks:
+      - visuallize
+    ports:
+      - 9999:8080
+    volumes:
+      - visuallize:/home/visuallize
